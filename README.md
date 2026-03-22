@@ -59,9 +59,9 @@ go queue.Push(3)
 
 // Flush the entire slice instantly O(1)
 batch := queue.PopAll()
-fmt.Println(batch) // [1, 2, 3] 
+fmt.Println(batch) // [1, 2, 3]
 
-// The internal queue memory cleanly shrinks if traffic permanently stops, 
+// The internal queue memory cleanly shrinks if traffic permanently stops,
 // natively preventing memory hoarding!
 ```
 
@@ -93,7 +93,7 @@ func main() {
 ---
 
 ### 3. `todo` (Dynamic Technical Debt Logging)
-Provides explicit codebase markers to highlight missing implementations or Edge-Case warnings dynamically into telemetry frameworks. Rather than burying incomplete code inside a `// TODO:` comment that no one ever reads, this strictly broadcasts technical debt into runtime monitoring! 
+Provides explicit codebase markers to highlight missing implementations or Edge-Case warnings dynamically into telemetry frameworks. Rather than burying incomplete code inside a `// TODO:` comment that no one ever reads, this strictly broadcasts technical debt into runtime monitoring!
 
 ```go
 package main
@@ -116,5 +116,33 @@ func SwitchCase(val string) {
 		// Output: logic/switch.go:17 [SwitchCase] > TODO: handle unmapped edge case
 		todo.Logf("handle unmapped edge case %s", val)
 	}
+}
+```
+
+---
+
+### 4. `ratelimit` (High-Performance Rate Limiting)
+A thread-safe, modular rate-limiting library with support for EveryN, Interval, Random, and Quota strategies. It features a zero-allocation execution path via pre-registration of named strategies.
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/darbitman/golib/ratelimit"
+)
+
+func main() {
+    l := ratelimit.New()
+
+    // 1. Pre-register a strategy for high performance (zero allocations later)
+    l.Register("my-api", &ratelimit.EveryN{N: 10})
+
+    // 2. Execute functions against the named limit
+    for i := 0; i < 100; i++ {
+        l.Execute("my-api", func() {
+            fmt.Printf("Execution #%d\n", i)
+        })
+    }
 }
 ```
